@@ -1,3 +1,4 @@
-/**
- * @fileoverview Description of this file.
- */
+
+$(document).ready(function() {
+  $("#game").text("IAH");
+});
