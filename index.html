@@ -1,10 +1,52 @@
 <html>
+<head>
+<link href="bootstrap.css" rel="stylesheet">
+<link href="style.css" rel="stylesheet">
+<style>
+.btop{
+    border-top:3px solid black;
+}
+.bbot{
+    border-bottom:3px solid black;
+}
+.bleft{
+    border-left:3px solid black;
+}
+.bright{
+    border-right:3px solid black;
+}
+.sudoku{
+    width:405px;
+    height:500px;
+
+    text-align:center;
+    font-size:24px;
+}
+input {
+    float:left;
+    display:inline;
+    width:45px;
+    height:45px;
+    text-align:center;
+    font-size:24px;
+    border:1px solid black;
+    border-radius: 0;
+    margin:0;
+}
+body {
+  padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+
+</style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<!-- <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script> -->
 <script src="index.js"></script>
+</head>
 <body>
 <h2>Sudoku</h2>
-<div id="game"></div>
+<div class="container">
+  <div id="game"></div>
+</div>
 </body>
 </html>
