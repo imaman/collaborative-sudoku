@@ -3,18 +3,6 @@
 <link href="bootstrap.css" rel="stylesheet">
 <link href="style.css" rel="stylesheet">
 <style>
-.btop{
-    border-top:3px solid black;
-}
-.bbot{
-    border-bottom:3px solid black;
-}
-.bleft{
-    border-left:3px solid black;
-}
-.bright{
-    border-right:3px solid black;
-}
 .sudoku{
     width:405px;
     height:500px;
@@ -22,9 +10,11 @@
     text-align:center;
     font-size:24px;
 }
-input {
+
+input[readonly='readonly'] {
     float:left;
     display:inline;
+    background-color: white;
     width:45px;
     height:45px;
     text-align:center;
@@ -32,6 +22,18 @@ input {
     border:1px solid black;
     border-radius: 0;
     margin:0;
+}
+.btop[readonly='readonly']{
+    border-top:3px solid black;
+}
+.bbot[readonly='readonly']{
+    border-bottom:3px solid black;
+}
+.bleft[readonly='readonly']{
+    border-left:3px solid black;
+}
+.bright[readonly='readonly']{
+    border-right:3px solid black;
 }
 body {
   padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
