@@ -5,7 +5,7 @@
     return 'cell_' + (r * 9 + c);
   }
 
-  function Model(cellById, moves, idBySession) {
+  function Model(cellById, moves, idBySession, doc) {
     console.log('cellById=' + JSON.stringify(cellById));
     this.toString = function() {
       return JSON.stringify(cellById, null, '  ');
@@ -22,6 +22,13 @@
         $('#' + this.selected).css('background-color', 'white');
       }
       this.selected = id;
+      var me = doc.getCollaborators().filter(function(curr) {
+        return curr.isMe;
+      });
+      if (me.length !== 1)
+        throw new Error('#me-s is not 1: ' + me.length);
+      me = me[0];
+      idBySession.set(me.sessionId, id);
       $('#' + this.selected).css('background-color', 'lightgrey');
     }
 
@@ -63,8 +70,8 @@
     }
   }
 
-  function buildModel(moves, idBySession) {
-    var model = new Model(fill({}), moves, idBySession);
+  function buildModel(moves, idBySession, doc) {
+    var model = new Model(fill({}), moves, idBySession, doc);
     moves.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, function(event) {
       model.flush();
     });
@@ -138,7 +145,7 @@
       function(doc) {
         console.log('doc loaded');
         var root = doc.getModel().getRoot();
-        var m = buildModel(root.get('moves'), root.get('idBySession'));
+        var m = buildModel(root.get('moves'), root.get('idBySession'), doc);
         m.flush();
       }
     );
