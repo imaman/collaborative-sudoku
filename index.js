@@ -17,18 +17,20 @@
       throw new Error('No cell found for ' + id + ' ' + JSON.stringify(cellById));
     }
 
-    this.select = function(id) {
-      if (this.selected) {
-        $('#' + this.selected).css('background-color', 'white');
-      }
-      this.selected = id;
+    this.whoAmI = function() {
       var me = doc.getCollaborators().filter(function(curr) {
         return curr.isMe;
       });
       if (me.length !== 1)
         throw new Error('#me-s is not 1: ' + me.length);
-      me = me[0];
-      idBySession.set(me.sessionId, id);
+      return me[0];
+    };
+
+    this.select = function(id) {
+      if (this.selected) {
+        $('#' + this.selected).css('background-color', 'white');
+      }
+      this.selected = id;
       $('#' + this.selected).css('background-color', 'lightgrey');
     }
 
@@ -57,7 +59,7 @@
         return;
 
       var id = this.selected;
-      moves.push({id: id, v: v});
+      moves.push({id: id, v: v, by: this.whoAmI().userId});
       this.flush();
     }
 
@@ -68,6 +70,19 @@
       });
       render(this);
     }
+
+    this.getLast = function(n) {
+      var arr = moves.asArray();
+      var begin = Math.max(0, arr.length - n);
+
+      collabById = {};
+      doc.getCollaborators().forEach(function(curr) {
+        collabById[curr.userId] = curr;
+      });
+      return arr.slice(begin).map(function(curr) {
+        return collabById[curr.by];
+      });
+    };
   }
 
   function buildModel(moves, idBySession, doc) {
@@ -118,6 +133,13 @@
   }
 
   function render(m) {
+    var h = $('<div></div>');
+    m.getLast(10).forEach(function(move) {
+      var item = $('<div></div>');
+      item.text(move.displayName);
+      h.append(item);
+    });
+    $('#history').html(h);
     var t = $('<div></div>');
     t.addClass('sudoku');
     for (var r = 0; r < 9; ++r) {
@@ -134,6 +156,8 @@
       console.log('keyup on table: ' + event.which);
     });
     $('#game').html(t);
+
+
   }
 
   $(document).ready(function() {

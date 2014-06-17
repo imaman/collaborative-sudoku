@@ -1,6 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<link href="bootstrap.css" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
 <link href="style.css" rel="stylesheet">
 <style>
 .sudoku{
@@ -55,7 +60,11 @@ body {
 <button id="authorizeButton">Authorize</button>
 <h2>Sudoku</h2>
 <div class="container">
-  <div id="game"></div>
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-6" id="game"></div>
+    <div class="col-md-3" id="history"></div>
+  </div>
 </div>
 </body>
 </html>
