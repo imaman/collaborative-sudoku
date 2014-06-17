@@ -51,13 +51,23 @@
 
       var id = this.selected;
       moves.push({id: id, v: v});
-      cellById[id].v = v;
+      this.flush();
+    }
+
+    this.flush = function() {
+      fill(cellById);
+      moves.asArray().forEach(function(curr) {
+        cellById[curr.id].v = curr.v;
+      });
       render(this);
     }
   }
 
   function buildModel(moves, idBySession) {
-    var cellById = {};
+    return new Model(fill({}), moves, idBySession);
+  }
+
+  function fill(cellById) {
     var i, j;
     for (i = 0; i < 81; ++i) {
       var r = Math.floor(i / 9);
@@ -66,9 +76,7 @@
       cellById[id] = {id: id, r: r, c: c, z: Math.floor(r / 3) * 3 + Math.floor(c / 3), v: ''};
     }
 
-    console.log('cellById=' + JSON.stringify(cellById));
-
-    return new Model(cellById, moves, idBySession);
+    return cellById;
   }
 
   function renderCell(m, r, c) {
