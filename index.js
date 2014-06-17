@@ -64,7 +64,11 @@
   }
 
   function buildModel(moves, idBySession) {
-    return new Model(fill({}), moves, idBySession);
+    var model = new Model(fill({}), moves, idBySession);
+    moves.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, function(event) {
+      model.flush();
+    });
+    return model;
   }
 
   function fill(cellById) {
@@ -135,7 +139,7 @@
         console.log('doc loaded');
         var root = doc.getModel().getRoot();
         var m = buildModel(root.get('moves'), root.get('idBySession'));
-        render(m);
+        m.flush();
       }
     );
   });
