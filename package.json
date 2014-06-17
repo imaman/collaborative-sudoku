@@ -1,0 +1,8 @@
+{
+  "name": "sudoku",
+  "description": "drive realtime API demo",
+  "author": "Itay Maman",
+  "dependencies": {
+    "express": "^4.4.3"
+  }
+}
