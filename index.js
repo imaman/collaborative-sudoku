@@ -59,7 +59,11 @@
         return;
 
       var id = this.selected;
-      moves.push({id: id, v: v, by: this.whoAmI().userId});
+      moves.push({
+        id: id, v: v,
+        by: this.whoAmI().userId,
+        byName: this.whoAmI().displayName,
+        at: new Date().getTime() });
       this.flush();
     }
 
@@ -80,7 +84,7 @@
         collabById[curr.userId] = curr;
       });
       return arr.slice(begin).map(function(curr) {
-        return collabById[curr.by];
+        return { move: curr, collaborator: collabById[curr.by] };
       });
     };
   }
@@ -134,9 +138,11 @@
 
   function render(m) {
     var h = $('<div></div>');
-    m.getLast(10).forEach(function(move) {
+    m.getLast(10).forEach(function(curr) {
       var item = $('<div></div>');
-      item.text(move.displayName);
+      item.text(curr.move.byName);
+      if (curr.collaborator)
+        item.css('color', curr.collaborator.color);
       h.append(item);
     });
     $('#history').html(h);
