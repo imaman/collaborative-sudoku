@@ -5,10 +5,23 @@
     return 'cell_' + (r * 9 + c);
   }
 
-  function Model(cellById, moves, idBySession, doc) {
+  function Model(cellById, moves, idBySession, userById, doc) {
     console.log('cellById=' + JSON.stringify(cellById));
     this.toString = function() {
       return JSON.stringify(cellById, null, '  ');
+    }
+
+    this.setName = function(name) {
+      var who = this.whoAmI();
+      var uid = who && who.userId;
+
+      if (!uid) {
+        console.log('uid is nothing. who=' + JSON.stringify(who));
+        throw new Error('Stopped');
+      }
+
+
+      userById.set(who.userId, name);
     }
     this.at = function(id) {
       var res = cellById[id];
@@ -84,15 +97,23 @@
         collabById[curr.userId] = curr;
       });
       return arr.slice(begin).map(function(curr) {
-        return { move: curr, collaborator: collabById[curr.by] };
+        var displayName = 'Unknown User';
+        if (curr.by)
+          displayName = userById.get(curr.by) || displayName;
+        return { move: curr, displayName: displayName };
       }).reverse();
     };
   }
 
-  function buildModel(moves, idBySession, doc) {
-    var model = new Model(fill({}), moves, idBySession, doc);
+  function buildModel(moves, idBySession, userById, doc) {
+    var model = new Model(fill({}), moves, idBySession, userById, doc);
     moves.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, function(event) {
-      model.flush();
+      try {
+        model.flush();
+      } catch (e) {
+        console.log('err=' + e.stack);
+        throw e;
+      }
     });
     return model;
   }
@@ -140,9 +161,9 @@
     var h = $('<div></div>');
     m.getLast(10).forEach(function(curr) {
       var item = $('<div></div>');
-      item.text(curr.move.byName + ' ' + moment(curr.move.at).fromNow());
-      if (curr.collaborator)
-        item.css('color', curr.collaborator.color);
+      item.text(curr.displayName + ' ' + moment(curr.move.at).fromNow());
+//      if (curr.collaborator)
+//        item.css('color', curr.collaborator.color);
       h.append(item);
     });
     $('#history').html(h);
@@ -171,11 +192,15 @@
       function(model) {
         model.getRoot().set('moves', model.createList());
         model.getRoot().set('idBySession', model.createMap());
+        model.getRoot().set('userById', model.createMap());
       },
       function(doc) {
         console.log('doc loaded');
         var root = doc.getModel().getRoot();
-        var m = buildModel(root.get('moves'), root.get('idBySession'), doc);
+        var m = buildModel(root.get('moves'), root.get('idBySession'), root.get('userById'), doc);
+        $('#nameField').keyup(function() {
+          m.setName($(this).val());
+        });
         m.flush();
       }
     );

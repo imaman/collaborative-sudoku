@@ -36,6 +36,7 @@ var rtclient = rtclient || {}
 rtclient.INSTALL_SCOPE = 'https://www.googleapis.com/auth/drive.install'
 
 
+
 /**
  * OAuth 2.0 scope for opening and creating files.
  * @const
@@ -150,9 +151,9 @@ rtclient.Authorizer.prototype.authorize = function(onAuthComplete) {
     gapi.auth.authorize({
       client_id: clientId,
       scope: [
-        rtclient.INSTALL_SCOPE,
-        rtclient.FILE_SCOPE,
-        rtclient.OPENID_SCOPE
+//        rtclient.INSTALL_SCOPE,
+        rtclient.FILE_SCOPE
+//        rtclient.OPENID_SCOPE
       ],
       user_id: userId,
       immediate: false
@@ -164,9 +165,9 @@ rtclient.Authorizer.prototype.authorize = function(onAuthComplete) {
   gapi.auth.authorize({
     client_id: clientId,
     scope: [
-      rtclient.INSTALL_SCOPE,
-      rtclient.FILE_SCOPE,
-      rtclient.OPENID_SCOPE
+//      rtclient.INSTALL_SCOPE,
+      rtclient.FILE_SCOPE
+//      rtclient.OPENID_SCOPE
     ],
     user_id: userId,
     immediate: true
@@ -387,14 +388,31 @@ rtclient.RealtimeLoader.prototype.createNewFileAndRedirect = function() {
   // redirect to it.
   var _this = this;
   rtclient.createRealtimeFile(this.defaultTitle, this.newFileMimeType, function(file) {
-    if (file.id) {
-      _this.redirectTo([file.id], _this.authorizer.userId);
-    }
-    // File failed to be created, log why and do not attempt to redirect.
-    else {
+    if (!file.id) {
       console.error('Error creating file.');
       console.error(file);
+      return;
     }
+
+    console.log('sharing ' + file.id + ' with everyone');
+
+    gapi.client.drive.permissions.insert({
+      'fileId': file.id,
+//      'sendNotificationEmails': false,
+      'resource': {
+        'type': 'anyone',
+        'role': 'writer',
+        'value': 'default',
+        'withLink': true
+      }
+    }).execute(function(resp) {
+      if (resp.error) {
+        console.error('error sharing file ' + file.id);
+        console.error(resp);
+        return;
+      }
+      _this.redirectTo([file.id], _this.authorizer.userId);
+    });
   });
 }
 
