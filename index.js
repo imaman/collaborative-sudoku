@@ -1,31 +1,54 @@
 
 
 (function() {
+  function idFromPos(r, c) {
+    return 'cell_' + (r * 9 + c);
+  }
+
   function Model(m) {
     var moves = [];
     this.toString = function() {
       return JSON.stringify(m, null, '  ');
     }
     this.at = function(r, c) {
-      var temp = m.filter(function(curr) { return curr.r === r && curr.c == c });
-      if (temp.length !== 1)
-        throw new Error('bad location ' + r + ', ' + c);
-      return temp[0];
+      var id = idFromPos(r, c);
+      var res = m[id];
+      if (res)
+        return res;
+      throw new Error('No cell found for ' + id);
     }
 
-    this.place = function(id, v) {
+    this.ok = function(r, c) {
+      var cell = m[idFromPos(r,c)];
+      var all = Object.keys(m).map(function(k) { return m[k] });
+      var effectiveZone = all.filter(function(o) {
+        return o.r === cell.r || o.c === cell.c || o.z === cell.z;
+      });
+      if (effectiveZone.length != 21)
+        throw new Error('unexpected zone size. len=' + effectiveZone.length);
+
+      var conflicting = effectiveZone.filter(function(o) {
+        return (o.v === cell.v) && (cell.v != '');
+      });
+
+      return conflicting.length === 1;
+    };
+
+    this.step = function(id, v) {
       moves.push({id: id, v: v});
-      console.log('moves=' + JSON.stringify(moves));
+      m[id].v = v;
+      render(this);
     }
   }
 
   function buildModel() {
-    var res = [];
+    var res = {};
     var i, j;
     for (i = 0; i < 81; ++i) {
       var r = Math.floor(i / 9);
       var c = i % 9;
-      res.push({id: 'cell_' + i, r: r, c: c, z: Math.floor(r / 3) * 3 + Math.floor(c / 3), v: '?'});
+      var id = 'cell_' + i;
+      res[id] = {id: 'cell_' + i, r: r, c: c, z: Math.floor(r / 3) * 3 + Math.floor(c / 3), v: ''};
     }
 
     return new Model(res);
@@ -52,10 +75,11 @@
             return;
 
           var n = event.which - 48;
-          m.place(this.id, n);
+          m.step(this.id, n);
         });
 
-        td.text(cell.v);
+        td.val(cell.v);
+        m.ok(r, c) || td.addClass('bad');
         t.append(td);
       }
     }
