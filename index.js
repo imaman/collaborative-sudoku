@@ -5,16 +5,16 @@
     return 'cell_' + (r * 9 + c);
   }
 
-  function Model(m) {
-    var moves = [];
+  function Model(cellById, moves, idBySession) {
+    console.log('cellById=' + JSON.stringify(cellById));
     this.toString = function() {
-      return JSON.stringify(m, null, '  ');
+      return JSON.stringify(cellById, null, '  ');
     }
     this.at = function(id) {
-      var res = m[id];
+      var res = cellById[id];
       if (res)
         return res;
-      throw new Error('No cell found for ' + id);
+      throw new Error('No cell found for ' + id + ' ' + JSON.stringify(cellById));
     }
 
     this.select = function(id) {
@@ -30,8 +30,8 @@
     }
 
     this.ok = function(id) {
-      var cell = m[id];
-      var all = Object.keys(m).map(function(k) { return m[k] });
+      var cell = cellById[id];
+      var all = Object.keys(cellById).map(function(k) { return cellById[k] });
       var effectiveZone = all.filter(function(o) {
         return o.r === cell.r || o.c === cell.c || o.z === cell.z;
       });
@@ -51,22 +51,24 @@
 
       var id = this.selected;
       moves.push({id: id, v: v});
-      m[id].v = v;
+      cellById[id].v = v;
       render(this);
     }
   }
 
-  function buildModel() {
-    var res = {};
+  function buildModel(moves, idBySession) {
+    var cellById = {};
     var i, j;
     for (i = 0; i < 81; ++i) {
       var r = Math.floor(i / 9);
       var c = i % 9;
       var id = 'cell_' + i;
-      res[id] = {id: 'cell_' + i, r: r, c: c, z: Math.floor(r / 3) * 3 + Math.floor(c / 3), v: ''};
+      cellById[id] = {id: id, r: r, c: c, z: Math.floor(r / 3) * 3 + Math.floor(c / 3), v: ''};
     }
 
-    return new Model(res);
+    console.log('cellById=' + JSON.stringify(cellById));
+
+    return new Model(cellById, moves, idBySession);
   }
 
   function renderCell(m, r, c) {
@@ -118,11 +120,13 @@
   $(document).ready(function() {
     startRealtime(
       function(model) {
-        console.log('initing model');
+        model.getRoot().set('moves', model.createList());
+        model.getRoot().set('idBySession', model.createMap());
       },
       function(doc) {
         console.log('doc loaded');
-        var m = buildModel();
+        var root = doc.getModel().getRoot();
+        var m = buildModel(root.get('moves'), root.get('idBySession'));
         render(m);
       }
     );
