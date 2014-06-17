@@ -18,8 +18,11 @@
     }
 
     this.select = function(id) {
+      if (this.selected) {
+        $('#' + this.selected).css('background-color', 'white');
+      }
       this.selected = id;
-      //render(this);
+      $('#' + this.selected).css('background-color', 'lightgrey');
     }
 
     this.isSelected = function(id) {
@@ -42,7 +45,11 @@
       return conflicting.length === 1;
     };
 
-    this.step = function(id, v) {
+    this.changeSelectionTo = function(v) {
+      if (!this.selected)
+        return;
+
+      var id = this.selected;
       moves.push({id: id, v: v});
       m[id].v = v;
       render(this);
@@ -68,10 +75,7 @@
     var td = $('<input></input>', {id: cell.id, type: 'text', maxlength: 1, readonly: 'readonly'});
 
     m.ok(id) || td.addClass('bad');
-    if (m.isSelected(id)) {
-      td.css('background-color', 'lightgrey');
-      //td.focus();
-    }
+    m.isSelected(id) && td.css('background-color', 'lightgrey');
 
     td.addClass('scell');
     if (r % 3 === 0)
@@ -86,11 +90,6 @@
       m.select(this.id);
     });
     td.keyup(function(event) {
-      if (event.which < 49 || event.which > 57)
-        return;
-
-      var n = event.which - 48;
-      m.step(this.id, n);
     });
 
     td.val(cell.v);
@@ -105,6 +104,14 @@
         t.append(renderCell(m, r, c));
       }
     }
+    t.keyup(function(event) {
+      if (event.which < 49 || event.which > 57)
+        return;
+
+      var n = event.which - 48;
+      m.changeSelectionTo(n);
+      console.log('keyup on table: ' + event.which);
+    });
     $('#game').html(t);
   }
 
