@@ -19,6 +19,7 @@
 
     this.select = function(id) {
       this.selected = id;
+      //render(this);
     }
 
     this.isSelected = function(id) {
@@ -67,7 +68,10 @@
     var td = $('<input></input>', {id: cell.id, type: 'text', maxlength: 1, readonly: 'readonly'});
 
     m.ok(id) || td.addClass('bad');
-    m.isSelected(id) && td.addClass('selected');
+    if (m.isSelected(id)) {
+      td.css('background-color', 'lightgrey');
+      //td.focus();
+    }
 
     td.addClass('scell');
     if (r % 3 === 0)
