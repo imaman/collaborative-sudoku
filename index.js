@@ -116,7 +116,15 @@
   }
 
   $(document).ready(function() {
-    var m = buildModel();
-    render(m);
+    startRealtime(
+      function(model) {
+        console.log('initing model');
+      },
+      function(doc) {
+        console.log('doc loaded');
+        var m = buildModel();
+        render(m);
+      }
+    );
   });
 })();
