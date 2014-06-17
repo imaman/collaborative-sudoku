@@ -85,7 +85,7 @@
       });
       return arr.slice(begin).map(function(curr) {
         return { move: curr, collaborator: collabById[curr.by] };
-      });
+      }).reverse();
     };
   }
 
@@ -140,7 +140,7 @@
     var h = $('<div></div>');
     m.getLast(10).forEach(function(curr) {
       var item = $('<div></div>');
-      item.text(curr.move.byName);
+      item.text(curr.move.byName + ' ' + moment(curr.move.at).fromNow());
       if (curr.collaborator)
         item.css('color', curr.collaborator.color);
       h.append(item);
