@@ -18,11 +18,10 @@
 
     function getAllCells() {
       var result = [];
-      for (i = 0; i < 81; ++i) {
-        var r = Math.floor(i / 9);
-        var c = i % 9;
-        result.push(getCell(idFromPos(r, c)));
-      }
+      var r, c;
+      for (r = 0; r < 9; ++r)
+        for (c = 0; c < 9; ++c)
+          result.push(getCell(idFromPos(r, c)));
       return result;
     }
 
