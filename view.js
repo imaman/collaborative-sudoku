@@ -3,7 +3,7 @@ function renderCell(m, r, c) {
   var cell = m.at(id);
   var td = $('<input></input>', {id: cell.id, type: 'text', maxlength: 1, readonly: 'readonly'});
 
-  m.ok(id) || td.addClass('bad');
+  m.isValid(id) || td.addClass('bad');
   m.isSelected(id) && td.css('background-color', 'lightgrey');
 
   td.addClass('scell');

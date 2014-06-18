@@ -43,7 +43,7 @@
       return this.selected === id;
     }
 
-    this.ok = function(id) {
+    this.isValid = function(id) {
       var cell = getCell(id);
       var all = getAllCells();
       var effectiveZone = all.filter(function(o) {
