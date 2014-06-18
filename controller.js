@@ -44,18 +44,18 @@ function Controller(board, moves) {
 
   this.flush = function() {
     board.resetBoard();
-    moves.forEach(function(curr) {
+    moves.asArray().forEach(function(curr) {
       board.getCell(curr.id).v = curr.v;
     });
     render(this);
   }
 
   this.getLast = function(n) {
-    return moves.slice(0).reverse().slice(0, n);
+    return moves.asArray().slice(0).reverse().slice(0, n);
   };
 
   this.clear = function() {
-    moves.splice(0, moves.length);
+    moves.clear();
   }
 }
 
