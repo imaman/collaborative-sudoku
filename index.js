@@ -24,7 +24,7 @@
     return result;
   }
 
-  function Model(moves) {
+  function Controller(moves) {
     this.idFromPos = idFromPos;
 
     this.at = function(id) {
@@ -107,17 +107,17 @@
         function(doc) {
           console.log('doc loaded');
           var root = doc.getModel().getRoot();
-          var m = new Model(root.get('moves'));
+          var controller = new Controller(root.get('moves'));
           root.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, function() {
             try {
-              m.flush();
+              controller.flush();
             } catch (e) {
               console.log('err=' + e.stack);
               throw e;
             }
           });
-          $('#clearButton').click(function() { m.clear() });
-          m.flush();
+          $('#clearButton').click(function() { controller.clear() });
+          controller.flush();
         },
         function(model) {
           model.getRoot().set('moves', model.createList());

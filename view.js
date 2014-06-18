@@ -1,10 +1,10 @@
-function renderCell(m, r, c) {
-  var id = m.idFromPos(r, c);
-  var cell = m.at(id);
+function renderCell(controller, r, c) {
+  var id = controller.idFromPos(r, c);
+  var cell = controller.at(id);
   var td = $('<input></input>', {id: cell.id, type: 'text', maxlength: 1, readonly: 'readonly'});
 
-  m.isValid(id) || td.addClass('bad');
-  m.isSelected(id) && td.css('background-color', 'lightgrey');
+  controller.isValid(id) || td.addClass('bad');
+  controller.isSelected(id) && td.css('background-color', 'lightgrey');
 
   td.addClass('scell');
   if (r % 3 === 0)
@@ -16,7 +16,7 @@ function renderCell(m, r, c) {
   if (c % 3 === 2)
     td.addClass('bright');
   td.click(function() {
-    m.select(this.id);
+    controller.select(this.id);
   });
   td.keyup(function(event) {
   });
@@ -25,9 +25,9 @@ function renderCell(m, r, c) {
   return td;
 }
 
-function render(m) {
+function render(controller) {
   var h = $('<div></div>');
-  m.getLast(10).forEach(function(curr) {
+  controller.getLast(10).forEach(function(curr) {
     var item = $('<div></div>');
     item.text(curr.displayName + ' ' + moment(curr.at).fromNow());
     h.append(item);
@@ -37,7 +37,7 @@ function render(m) {
   t.addClass('sudoku');
   for (var r = 0; r < 9; ++r) {
     for (var c = 0; c < 9; ++c) {
-      t.append(renderCell(m, r, c));
+      t.append(renderCell(controller, r, c));
     }
   }
   t.keyup(function(event) {
@@ -45,7 +45,7 @@ function render(m) {
       return;
 
     var n = event.which - 48;
-    m.makeMove(n);
+    controller.makeMove(n);
     console.log('keyup on table: ' + event.which);
   });
   $('#game').html(t);
