@@ -4,6 +4,16 @@
   var cellById = {};
   resetBoard(cellById);
 
+  function resetBoard(board) {
+    var i, j;
+    for (i = 0; i < 81; ++i) {
+      var r = Math.floor(i / 9);
+      var c = i % 9;
+      var id = 'cell_' + i;
+      board[id] = {id: id, r: r, c: c, z: Math.floor(r / 3) * 3 + Math.floor(c / 3), v: ''};
+    }
+  }
+
   function idFromPos(r, c) {
     return 'cell_' + (r * 9 + c);
   }
@@ -84,16 +94,6 @@
 
     this.clear = function() {
       moves.clear();
-    }
-  }
-
-  function resetBoard(board) {
-    var i, j;
-    for (i = 0; i < 81; ++i) {
-      var r = Math.floor(i / 9);
-      var c = i % 9;
-      var id = 'cell_' + i;
-      board[id] = {id: id, r: r, c: c, z: Math.floor(r / 3) * 3 + Math.floor(c / 3), v: ''};
     }
   }
 
