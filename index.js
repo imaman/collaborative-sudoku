@@ -4,6 +4,10 @@
   function Model(moves, doc) {
     var cellById = reset({});
 
+    function idFromPos(r, c) {
+      return 'cell_' + (r * 9 + c);
+    }
+
     function getCell(id) {
       var res = cellById[id];
       if (res)
@@ -11,9 +15,17 @@
       throw new Error('No cell found for ' + id + ' ' + JSON.stringify(cellById));
     }
 
-    this.idFromPos = function(r,c) {
-      return 'cell_' + (r * 9 + c);
+    function getAllCells() {
+      var result = [];
+      for (i = 0; i < 81; ++i) {
+        var r = Math.floor(i / 9);
+        var c = i % 9;
+        result.push(getCell(idFromPos(r, c)));
+      }
+      return result;
     }
+
+    this.idFromPos = idFromPos;
 
     this.at = function(id) {
       return getCell(id);
@@ -33,7 +45,7 @@
 
     this.ok = function(id) {
       var cell = getCell(id);
-      var all = Object.keys(cellById).map(function(id) { return getCell(id) });
+      var all = getAllCells();
       var effectiveZone = all.filter(function(o) {
         return o.r === cell.r || o.c === cell.c || o.z === cell.z;
       });
