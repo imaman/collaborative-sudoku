@@ -183,26 +183,33 @@
       console.log('keyup on table: ' + event.which);
     });
     $('#game').html(t);
-
-
   }
 
+  var CLIENT_ID = '498879331099-gs0q4drp0b7l098iu0pigk2jrlthl7bq.apps.googleusercontent.com';
+  var FILE_ID = '0B7w8hD8aAtTHSVFGaDkzanpkN28';
+
   $(document).ready(function() {
-    startRealtime(
-      function(model) {
-        model.getRoot().set('moves', model.createList());
-        model.getRoot().set('idBySession', model.createMap());
-        model.getRoot().set('userById', model.createMap());
-      },
-      function(doc) {
-        console.log('doc loaded');
-        var root = doc.getModel().getRoot();
-        var m = buildModel(root.get('moves'), root.get('idBySession'), root.get('userById'), doc);
-        $('#nameField').keyup(function() {
-          m.setName($(this).val());
-        });
-        m.flush();
-      }
-    );
+    initRealtimeApi(CLIENT_ID, function() {
+      gapi.drive.realtime.load(FILE_ID,
+        function(doc) {
+          console.log('doc loaded');
+          var root = doc.getModel().getRoot();
+          var m = buildModel(root.get('moves'), root.get('idBySession'), root.get('userById'), doc);
+          $('#nameField').keyup(function() {
+            m.setName($(this).val());
+          });
+          m.flush();
+        },
+        function(model) {
+          model.getRoot().set('moves', model.createList());
+          model.getRoot().set('idBySession', model.createMap());
+          model.getRoot().set('userById', model.createMap());
+        },
+        function(error) {
+          console.log('error=' + error);
+          console.error(error);
+        }
+      );
+    });
   });
 })();
