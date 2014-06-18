@@ -2,7 +2,8 @@
 
 (function() {
   function Model(moves, doc) {
-    var cellById = reset({});
+    var cellById = {};
+    resetBoard(cellById);
 
     function idFromPos(r, c) {
       return 'cell_' + (r * 9 + c);
@@ -69,7 +70,7 @@
     }
 
     this.flush = function() {
-      reset(cellById);
+      resetBoard(cellById);
       moves.asArray().forEach(function(curr) {
         getCell(curr.id).v = curr.v;
       });
@@ -98,16 +99,14 @@
     return model;
   }
 
-  function reset(cellById) {
+  function resetBoard(board) {
     var i, j;
     for (i = 0; i < 81; ++i) {
       var r = Math.floor(i / 9);
       var c = i % 9;
       var id = 'cell_' + i;
-      cellById[id] = {id: id, r: r, c: c, z: Math.floor(r / 3) * 3 + Math.floor(c / 3), v: ''};
+      board[id] = {id: id, r: r, c: c, z: Math.floor(r / 3) * 3 + Math.floor(c / 3), v: ''};
     }
-
-    return cellById;
   }
 
 
