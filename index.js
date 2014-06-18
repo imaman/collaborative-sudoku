@@ -1,17 +1,14 @@
 
 
 (function() {
-  function idFromPos(r, c) {
-    return 'cell_' + (r * 9 + c);
-  }
-
-  function Model(cellById, moves, doc) {
+  function Model(moves, doc) {
+    var cellById = reset({});
     this.toString = function() {
       return JSON.stringify(cellById, null, '  ');
     }
 
     this.idFromPos = function(r,c) {
-      return idFromPos(r, c);
+      return 'cell_' + (r * 9 + c);
     }
 
     this.at = function(id) {
@@ -59,7 +56,7 @@
     }
 
     this.flush = function() {
-      fill(cellById);
+      reset(cellById);
       moves.asArray().forEach(function(curr) {
         cellById[curr.id].v = curr.v;
       });
@@ -83,8 +80,8 @@
     }
   }
 
-  function buildModel(moves, userById, doc) {
-    var model = new Model(fill({}), moves, userById, doc);
+  function buildModel(moves, doc) {
+    var model = new Model(moves, doc);
     moves.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, function(event) {
       try {
         model.flush();
@@ -96,7 +93,7 @@
     return model;
   }
 
-  function fill(cellById) {
+  function reset(cellById) {
     var i, j;
     for (i = 0; i < 81; ++i) {
       var r = Math.floor(i / 9);
