@@ -1,30 +1,30 @@
 
 
 (function() {
-  function Model(moves, doc) {
-    var cellById = {};
-    resetBoard(cellById);
+  var cellById = {};
+  resetBoard(cellById);
 
-    function idFromPos(r, c) {
-      return 'cell_' + (r * 9 + c);
-    }
+  function idFromPos(r, c) {
+    return 'cell_' + (r * 9 + c);
+  }
 
-    function getCell(id) {
-      var res = cellById[id];
-      if (res)
-        return res;
-      throw new Error('No cell found for ' + id + ' ' + JSON.stringify(cellById));
-    }
+  function getCell(id) {
+    var res = cellById[id];
+    if (res)
+      return res;
+    throw new Error('No cell found for ' + id + ' ' + JSON.stringify(cellById));
+  }
 
-    function getAllCells() {
-      var result = [];
-      var r, c;
-      for (r = 0; r < 9; ++r)
-        for (c = 0; c < 9; ++c)
-          result.push(getCell(idFromPos(r, c)));
-      return result;
-    }
+  function getAllCells() {
+    var result = [];
+    var r, c;
+    for (r = 0; r < 9; ++r)
+      for (c = 0; c < 9; ++c)
+        result.push(getCell(idFromPos(r, c)));
+    return result;
+  }
 
+  function Model(moves) {
     this.idFromPos = idFromPos;
 
     this.at = function(id) {
@@ -79,23 +79,12 @@
     this.getLast = function(n) {
       var arr = moves.asArray();
       var begin = Math.max(0, arr.length - n);
-
-      collabById = {};
-      doc.getCollaborators().forEach(function(curr) {
-        collabById[curr.userId] = curr;
-      });
-      return arr.slice(begin).map(function(curr) {
-        return curr;
-      }).reverse();
+      return arr.slice(begin).reverse();
     };
+
     this.clear = function() {
       moves.clear();
     }
-  }
-
-  function buildModel(moves, doc) {
-    var model = new Model(moves, doc);
-    return model;
   }
 
   function resetBoard(board) {
@@ -118,7 +107,7 @@
         function(doc) {
           console.log('doc loaded');
           var root = doc.getModel().getRoot();
-          var m = buildModel(root.get('moves'), doc);
+          var m = new Model(root.get('moves'));
           root.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, function() {
             try {
               m.flush();
