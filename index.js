@@ -5,39 +5,18 @@
     return 'cell_' + (r * 9 + c);
   }
 
-  function Model(cellById, moves, userById, doc) {
+  function Model(cellById, moves, doc) {
     console.log('cellById=' + JSON.stringify(cellById));
     this.toString = function() {
       return JSON.stringify(cellById, null, '  ');
     }
 
-    this.setName = function(name) {
-      var who = this.whoAmI();
-      var uid = who && who.userId;
-
-      if (!uid) {
-        console.log('uid is nothing. who=' + JSON.stringify(who));
-        throw new Error('Stopped');
-      }
-
-
-      userById.set(who.userId, name);
-    }
     this.at = function(id) {
       var res = cellById[id];
       if (res)
         return res;
       throw new Error('No cell found for ' + id + ' ' + JSON.stringify(cellById));
     }
-
-    this.whoAmI = function() {
-      var me = doc.getCollaborators().filter(function(curr) {
-        return curr.isMe;
-      });
-      if (me.length !== 1)
-        throw new Error('#me-s is not 1: ' + me.length);
-      return me[0];
-    };
 
     this.select = function(id) {
       if (this.selected) {
@@ -74,8 +53,7 @@
       var id = this.selected;
       moves.push({
         id: id, v: v,
-        by: this.whoAmI().userId,
-        byName: this.whoAmI().displayName,
+        displayName: $('#nameField').val(),
         at: new Date().getTime() });
       this.flush();
     }
@@ -97,12 +75,12 @@
         collabById[curr.userId] = curr;
       });
       return arr.slice(begin).map(function(curr) {
-        var displayName = 'Unknown User';
-        if (curr.by)
-          displayName = userById.get(curr.by) || displayName;
-        return { move: curr, displayName: displayName };
+        return curr;
       }).reverse();
     };
+    this.clear = function() {
+      moves.clear();
+    }
   }
 
   function buildModel(moves, userById, doc) {
@@ -161,7 +139,7 @@
     var h = $('<div></div>');
     m.getLast(10).forEach(function(curr) {
       var item = $('<div></div>');
-      item.text(curr.displayName + ' ' + moment(curr.move.at).fromNow());
+      item.text(curr.displayName + ' ' + moment(curr.at).fromNow());
 //      if (curr.collaborator)
 //        item.css('color', curr.collaborator.color);
       h.append(item);
@@ -194,15 +172,12 @@
         function(doc) {
           console.log('doc loaded');
           var root = doc.getModel().getRoot();
-          var m = buildModel(root.get('moves'), root.get('userById'), doc);
-          $('#nameField').keyup(function() {
-            m.setName($(this).val());
-          });
+          var m = buildModel(root.get('moves'), doc);
+          $('#clearButton').click(function() { m.clear() });
           m.flush();
         },
         function(model) {
           model.getRoot().set('moves', model.createList());
-          model.getRoot().set('userById', model.createMap());
         },
         function(error) {
           console.log('error=' + error);
