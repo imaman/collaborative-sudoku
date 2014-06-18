@@ -15,9 +15,9 @@
             controller.flush();
           });
           controller.flush();
-          $('#clearButton').click(function() { controller.clear(); controller.flush(); });
-          $('#undoButton').click(function() { controller.undo() });
-          $('#redoButton').click(function() { controller.redo() });
+          $('#clearButton').click(function() { controller.clear(); });
+          $('#undoButton').click(function() { model.undo() });
+          $('#redoButton').click(function() { model.redo() });
         });
       });
   });
