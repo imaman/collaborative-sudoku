@@ -5,7 +5,7 @@
     return 'cell_' + (r * 9 + c);
   }
 
-  function Model(cellById, moves, idBySession, userById, doc) {
+  function Model(cellById, moves, userById, doc) {
     console.log('cellById=' + JSON.stringify(cellById));
     this.toString = function() {
       return JSON.stringify(cellById, null, '  ');
@@ -105,8 +105,8 @@
     };
   }
 
-  function buildModel(moves, idBySession, userById, doc) {
-    var model = new Model(fill({}), moves, idBySession, userById, doc);
+  function buildModel(moves, userById, doc) {
+    var model = new Model(fill({}), moves, userById, doc);
     moves.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, function(event) {
       try {
         model.flush();
@@ -194,7 +194,7 @@
         function(doc) {
           console.log('doc loaded');
           var root = doc.getModel().getRoot();
-          var m = buildModel(root.get('moves'), root.get('idBySession'), root.get('userById'), doc);
+          var m = buildModel(root.get('moves'), root.get('userById'), doc);
           $('#nameField').keyup(function() {
             m.setName($(this).val());
           });
@@ -202,7 +202,6 @@
         },
         function(model) {
           model.getRoot().set('moves', model.createList());
-          model.getRoot().set('idBySession', model.createMap());
           model.getRoot().set('userById', model.createMap());
         },
         function(error) {
