@@ -11,6 +11,9 @@
           var model = doc.getModel();
           var root = model.getRoot();
           var controller = new Controller(new Board(), root.get('moves'));
+          root.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, function() {
+            controller.flush();
+          });
           controller.flush();
           $('#clearButton').click(function() { controller.clear(); controller.flush(); });
           $('#undoButton').click(function() { controller.undo() });
