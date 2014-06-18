@@ -50,9 +50,7 @@ function Controller(board, moves) {
   }
 
   this.getLast = function(n) {
-    var arr = moves.asArray();
-    var begin = Math.max(0, arr.length - n);
-    return arr.slice(begin).reverse();
+    return moves.asArray().slice(0).reverse().slice(0, n);
   };
 
   this.clear = function() {
