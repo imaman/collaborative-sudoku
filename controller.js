@@ -39,7 +39,6 @@ function Controller(board, moves) {
       id: id, v: v,
       displayName: $('#nameField').val(),
       at: new Date().getTime() });
-    this.flush();
   }
 
   this.flush = function() {
