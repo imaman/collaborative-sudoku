@@ -39,22 +39,23 @@ function Controller(board, moves) {
       id: id, v: v,
       displayName: $('#nameField').val(),
       at: new Date().getTime() });
+    this.flush();
   }
 
   this.flush = function() {
     board.resetBoard();
-    moves.asArray().forEach(function(curr) {
+    moves.forEach(function(curr) {
       board.getCell(curr.id).v = curr.v;
     });
     render(this);
   }
 
   this.getLast = function(n) {
-    return moves.asArray().slice(0).reverse().slice(0, n);
+    return moves.slice(0).reverse().slice(0, n);
   };
 
   this.clear = function() {
-    moves.clear();
+    moves.splice(0, moves.length);
   }
 }
 
