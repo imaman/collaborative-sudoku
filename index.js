@@ -3,8 +3,12 @@
 (function() {
   function Model(moves, doc) {
     var cellById = reset({});
-    this.toString = function() {
-      return JSON.stringify(cellById, null, '  ');
+
+    function getCell(id) {
+      var res = cellById[id];
+      if (res)
+        return res;
+      throw new Error('No cell found for ' + id + ' ' + JSON.stringify(cellById));
     }
 
     this.idFromPos = function(r,c) {
@@ -12,10 +16,7 @@
     }
 
     this.at = function(id) {
-      var res = cellById[id];
-      if (res)
-        return res;
-      throw new Error('No cell found for ' + id + ' ' + JSON.stringify(cellById));
+      return getCell(id);
     }
 
     this.select = function(id) {
@@ -31,8 +32,8 @@
     }
 
     this.ok = function(id) {
-      var cell = cellById[id];
-      var all = Object.keys(cellById).map(function(k) { return cellById[k] });
+      var cell = getCell(id);
+      var all = Object.keys(cellById).map(function(id) { return getCell(id) });
       var effectiveZone = all.filter(function(o) {
         return o.r === cell.r || o.c === cell.c || o.z === cell.z;
       });
@@ -58,7 +59,7 @@
     this.flush = function() {
       reset(cellById);
       moves.asArray().forEach(function(curr) {
-        cellById[curr.id].v = curr.v;
+        getCell(curr.id).v = curr.v;
       });
       render(this);
     }
@@ -82,14 +83,6 @@
 
   function buildModel(moves, doc) {
     var model = new Model(moves, doc);
-    moves.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, function(event) {
-      try {
-        model.flush();
-      } catch (e) {
-        console.log('err=' + e.stack);
-        throw e;
-      }
-    });
     return model;
   }
 
@@ -116,6 +109,14 @@
           console.log('doc loaded');
           var root = doc.getModel().getRoot();
           var m = buildModel(root.get('moves'), doc);
+          root.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, function() {
+            try {
+              m.flush();
+            } catch (e) {
+              console.log('err=' + e.stack);
+              throw e;
+            }
+          });
           $('#clearButton').click(function() { m.clear() });
           m.flush();
         },
