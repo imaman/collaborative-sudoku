@@ -26,13 +26,6 @@ function renderCell(controller, r, c) {
 }
 
 function render(controller) {
-  var h = $('<div></div>');
-  controller.getLast(10).forEach(function(curr) {
-    var item = $('<div></div>');
-    item.text(curr.displayName + ' ' + moment(curr.at).fromNow());
-    h.append(item);
-  });
-  $('#history').html(h);
   var t = $('<div></div>');
   t.addClass('sudoku');
   for (var r = 0; r < 9; ++r) {
